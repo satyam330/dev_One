@@ -1,11 +1,13 @@
 import React from 'react'
 import Navbar from '../components/Navbar'
-import Form from '../components/Form'
-
+import Registration from '../components/registration'
 
 const HomePage = () => {
   return (
-    <div><Navbar/><Form/></div>
+    <div>
+      <Navbar/>
+    <Registration/>
+    </div>
   )
 }
 
