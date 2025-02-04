@@ -1,14 +1,13 @@
 import React from 'react'
 import Navbar from '../components/Navbar'
 import Registration from '../components/registration'
-import DataPage from '../components/Datapage'
+import DataPage from '../components/UserDetails'
 
 const HomePage = () => {
   return (
     <div>
        <Navbar/> 
       <Registration/>
-    <DataPage/>
     </div>
   )
 }

@@ -2,7 +2,7 @@ import React from "react";
 import { useState } from "react";
 import HomePage from "./pages/HomePage";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import DataPage from "./components/Datapage";
+import UserDetails from "./components/UserDetails";
 
 const App = () => {
   return (
@@ -10,7 +10,7 @@ const App = () => {
       <Router>
         <Routes>
           <Route path="/" element={<HomePage/>}/>
-          <Route path="/datapage" element={<DataPage />} />
+          <Route path="/UserDetails" element={<UserDetails />} />
         </Routes>
       </Router>
     </>
