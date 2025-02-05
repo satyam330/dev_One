@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { signInForm } from "../constants/formItem";
+ import { baseUrl }from "../../environment/api.js";
 
 const Registration = () => {
   const navigate = useNavigate();
@@ -12,114 +14,63 @@ const Registration = () => {
     address: "",
   });
 
-  // Handle input changes
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-
-  // Handle form submission
-  const handleSubmit = (e) => {
+  
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    navigate("/UserDetails", { state: { userData: formData } });
+  
+    console.log("Submitting form data:", formData);
+  
+    try {
+      const response = await fetch(`${baseUrl}/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+  
+      console.log("Raw response:", response);
+  
+      if (!response.ok) {
+        const errorMessage = await response.text(); // Get the error message from API
+        throw new Error(`HTTP Error! Status: ${response.status}, Message: ${errorMessage}`);
+      }
+  
+      const data = await response.json();
+      console.log("Registration successful:", data);
+  
+      navigate("/UserDetails", { state: { userData: formData } });
+  
+    } catch (error) {
+      console.error("Error during registration:", error.message);
+    }
   };
+  
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100 p-6">
-      <div className="bg-white dark:bg-gray-800 dark:text-white p-8 rounded-lg shadow-lg w-full max-w-md transition-all duration-300">
-        
-        {/* Form Heading */}
+      <div className="bg-white p-6 rounded-lg w-[28rem]">
         <h2 className="text-2xl font-bold text-center text-gray-700 dark:text-gray-100 mb-6">
-           Registration Form
+          Registration Form
         </h2>
-
-        {/* Form Fields */}
         <form onSubmit={handleSubmit} className="space-y-5">
-          
-          {/* Name */}
-          <div>
-            <label className="block text-gray-600 dark:text-gray-300 font-medium">Name</label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              placeholder="Enter Your Name"
-              className="w-full p-3 border rounded-lg mt-1 focus:ring focus:ring-indigo-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-              required
-            />
-          </div>
-
-          {/* Age */}
-          <div>
-            <label className="block text-gray-600 dark:text-gray-300 font-medium">Age</label>
-            <input
-              type="number"
-              name="age"
-              value={formData.age}
-              onChange={handleChange}
-              placeholder="Enter Your Age"
-              className="w-full p-3 border rounded-lg mt-1 focus:ring focus:ring-indigo-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-              required
-            />
-          </div>
-
-          {/* Contact Number */}
-          <div>
-            <label className="block text-gray-600 dark:text-gray-300 font-medium">Contact Number</label>
-            <input
-              type="text"
-              name="contactNumber"
-              value={formData.contactNumber}
-              onChange={handleChange}
-              placeholder="Enter Your Contact Number"
-              className="w-full p-3 border rounded-lg mt-1 focus:ring focus:ring-indigo-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-              required
-            />
-          </div>
-
-          {/* Email */}
-          <div>
-            <label className="block text-gray-600 dark:text-gray-300 font-medium">Email</label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="Enter Your Email"
-              className="w-full p-3 border rounded-lg mt-1 focus:ring focus:ring-indigo-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-              required
-            />
-          </div>
-
-          {/* City */}
-          <div>
-            <label className="block text-gray-600 dark:text-gray-300 font-medium">City</label>
-            <input
-              type="text"
-              name="city"
-              value={formData.city}
-              onChange={handleChange}
-              placeholder="Enter Your City"
-              className="w-full p-3 border rounded-lg mt-1 focus:ring focus:ring-indigo-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-              required
-            />
-          </div>
-
-          {/* Address */}
-          <div>
-            <label className="block text-gray-600 dark:text-gray-300 font-medium">Address</label>
-            <input
-              type="text"
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-              placeholder="Enter Your Address"
-              className="w-full p-3 border rounded-lg mt-1 focus:ring focus:ring-indigo-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-              required
-            />
-          </div>
-
-          {/* Submit Button */}
+          {signInForm.map(({ label, name, type, placeholder }) => (
+            <div key={name}>
+              <label className="block text-gray-600 dark:text-gray-300 font-medium">{label}</label>
+              <input
+                type={type}
+                name={name}
+                value={formData[name]}
+                onChange={handleChange}
+                placeholder={placeholder}
+                className="w-full p-3 border rounded-lg mt-1 focus:ring focus:ring-indigo-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                required
+              />
+            </div>
+          ))}
           <div className="text-center">
             <button
               type="submit"
