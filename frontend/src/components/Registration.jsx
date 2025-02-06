@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios"; // Import axios
 import { signInForm } from "../constants/formItem";
- import { baseUrl }from "../../environment/api.js";
+import { baseUrl } from "../../environment/api.js";
 
 const Registration = () => {
   const navigate = useNavigate();
@@ -17,38 +18,29 @@ const Registration = () => {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
   
     console.log("Submitting form data:", formData);
   
     try {
-      const response = await fetch(`${baseUrl}/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-  
-      console.log("Raw response:", response);
-  
-      if (!response.ok) {
-        const errorMessage = await response.text(); // Get the error message from API
-        throw new Error(`HTTP Error! Status: ${response.status}, Message: ${errorMessage}`);
-      }
-  
-      const data = await response.json();
-      console.log("Registration successful:", data);
-  
-      navigate("/UserDetails", { state: { userData: formData } });
-  
+      const response = await axios.post(`${baseUrl}/register`, formData);
+
+      console.log("Registration successful:", response.data);
+
+      navigate("/user-details", { state: { userData: formData } });
+
     } catch (error) {
-      console.error("Error during registration:", error.message);
+      if (error.response) {
+        console.error("Registration failed:", error.response.data);
+      } else if (error.request) {
+        console.error("Error request:", error.request);
+      } else {
+        console.error("Error message:", error.message);
+      }
     }
   };
-  
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100 p-6">
