@@ -1,32 +1,20 @@
-// import express from "express";
-const express = require("express");
-const User = require("../models/user.js");
+import express from "express";
+import { getAllUser, getDetailsById ,registerUser,updateUser, deleteUser } from "../controllers/userController.js";
+import { User } from "../models/user.js"; 
 
 const router = express.Router();
 
-// Create a new user
-router.post("/register", async (req, res) => {
-  try {
-    const newUser = new User(req.body);
-    console.log("newUser",newUser);
-    
-    const savedUser = await newUser.save();
-    res.status(201).json(savedUser);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
+// ✅ Get all users
+router.get("/users", getAllUser);
 
-// Get all users
-router.get("/users", async (req, res) => {
-  try {
-    const users = await User.find();
-    res.status(200).json(users);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+// ✅ Get a user by ID
+router.get("/user/:id", getDetailsById);
 
+// ✅ Delete a user
+router.delete("/user/:id", deleteUser);
 
+router.put("/users/:id",updateUser);
 
-module.exports = router;
+router.post("/register", registerUser);
+
+export default router;

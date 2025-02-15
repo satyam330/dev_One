@@ -1,141 +1,96 @@
-// EditUser.js
 import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import Navbar from "./Navbar";
+import { baseUrl } from "../../environment/api.js";
+import { FaArrowLeft, FaSave } from "react-icons/fa"; // Import icons
 
-const EditUser = () => {
-  const location = useLocation();
+const Update = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
-  const user = location.state?.user; // Get user data from state
 
-  const [updatedUser, setUpdatedUser] = useState(user || {}); // Local state to manage updates
-  const [isEditing, setIsEditing] = useState(true); // Track if editing is enabled
+  const [formData, setFormData] = useState({
+    name: "",
+    age: "",
+    contactNumber: "",
+    email: "",
+    city: "",
+    address: "",
+  });
 
+  // Fetch user data when component mounts
   useEffect(() => {
-    setUpdatedUser(user || {});
-  }, [user]);
-
-  const handleUpdate = async () => {
-    console.log("Updating user with data:", updatedUser)
-    try {
-      const response = await axios.put(`http://localhost:5000/api/users/${user.id}`, updatedUser);
-      if (response.status === 200) {
-        alert("User updated successfully!");
-        navigate("/more-info"); // Redirect to user details page
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.get(`${baseUrl}/user/${id}`);
+        const { _id, createdAt, updatedAt, __v, ...filteredData } = response.data;
+        setFormData(filteredData);
+      } catch (error) {
+        console.error("Error fetching user details:", error);
       }
+    };
+
+    if (id) fetchUserData();
+  }, [id]);
+
+  // Handle input changes
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.put(`${baseUrl}/users/${id}`, formData, {
+        headers: { "Content-Type": "application/json" },
+      });
+      navigate("/user-details", { replace: true });
     } catch (error) {
-      console.error("Error updating user:", error);
+      console.error("Error updating user details:", error);
     }
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setUpdatedUser((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
-
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-700">No user data available.</p>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <Navbar />
-      <div className="max-w-3xl mx-auto bg-white p-16 mt-8 rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold text-gray-700 text-center mb-6">
-          Edit User Information
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-indigo-600 to-blue-300 p-4">
+      <div className="bg-white bg-opacity-10 backdrop-blur-lg shadow-xl rounded-lg w-[28rem] p-6">
+        <h2 className="text-2xl font-bold text-center text-gray-500 mb-2">
+          ✏️ Edit User
         </h2>
-
-        <div className="space-y-4">
-          <div>
-            <label className="font-medium">Name:</label>
-            <input
-              type="text"
-              name="name"
-              value={updatedUser.name || ""}
-              onChange={handleChange}
-              className="w-full mt-2 p-2 border rounded-md"
-            />
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {Object.keys(formData).map((key) => (
+            <div key={key}>
+              <label className="block text-gray-700 font-medium">
+                {key.charAt(0).toUpperCase() + key.slice(1)}
+              </label>
+              <input
+                type={key === "age" ? "number" : "text"}
+                name={key}
+                value={formData[key] || ""}
+                onChange={handleChange}
+                className="w-full p-3 border-none rounded-lg bg-gray-200 focus:ring-4 focus:ring-indigo-300 transition-all outline-none"
+                required
+              />
+            </div>
+          ))}
+          <div className="flex justify-between mt-4">
+            <button
+              type="button"
+              className="flex items-center bg-gray-600 text-white px-4 py-3 rounded-lg font-semibold shadow-md transition-transform hover:scale-105 hover:bg-gray-700"
+              onClick={() => navigate("/user-details")}
+            >
+              <FaArrowLeft className="mr-2" /> Go Back
+            </button>
+            <button
+              type="submit"
+              className="flex items-center bg-yellow-500 text-white px-4 py-3 rounded-lg font-semibold shadow-md transition-transform hover:scale-105 hover:bg-yellow-600"
+            >
+              <FaSave className="mr-2" /> Update
+            </button>
           </div>
-          <div>
-            <label className="font-medium">Age:</label>
-            <input
-              type="text"
-              name="age"
-              value={updatedUser.age || ""}
-              onChange={handleChange}
-              className="w-full mt-2 p-2 border rounded-md"
-            />
-          </div>
-          <div>
-            <label className="font-medium">Contact:</label>
-            <input
-              type="text"
-              name="contactNumber"
-              value={updatedUser.contactNumber || ""}
-              onChange={handleChange}
-              className="w-full mt-2 p-2 border rounded-md"
-            />
-          </div>
-          <div>
-            <label className="font-medium">Email:</label>
-            <input
-              type="text"
-              name="email"
-              value={updatedUser.email || ""}
-              onChange={handleChange}
-              className="w-full mt-2 p-2 border rounded-md"
-            />
-          </div>
-          <div>
-            <label className="font-medium">City:</label>
-            <input
-              type="text"
-              name="city"
-              value={updatedUser.city || ""}
-              onChange={handleChange}
-              className="w-full mt-2 p-2 border rounded-md"
-            />
-          </div>
-          <div>
-            <label className="font-medium">Address:</label>
-            <input
-              type="text"
-              name="address"
-              value={updatedUser.address || ""}
-              onChange={handleChange}
-              className="w-full mt-2 p-2 border rounded-md"
-            />
-          </div>
-        </div>
-
-        <div className="mt-6 text-center">
-          <button
-            className="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600"
-            onClick={handleUpdate} // Submit changes to the server
-          >
-            Submit Changes
-          </button>
-        </div>
-
-        <div className="mt-6 text-center">
-          <button
-            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-            onClick={() => navigate("/MoreInfo", { state: { user } })} // Navigate back to MoreInfo page
-          >
-            Go Back
-          </button>
-        </div>
+        </form>
       </div>
     </div>
   );
 };
 
-export default EditUser;
+export default Update;

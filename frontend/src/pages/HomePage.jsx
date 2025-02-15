@@ -9,9 +9,9 @@ import Update from '../components/EditUser'
 const HomePage = () => {
   return (
     <div>
-       <Navbar/> 
+       {/* <Navbar/> */}
       <Registration/>
-      {/* <UserDetails/>
+      { /*<UserDetails/>
       <MoreInfo/>
       <Update/> */}
     </div>

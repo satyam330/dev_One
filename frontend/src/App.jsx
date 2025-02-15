@@ -11,12 +11,13 @@ const App = () => {
       <Router>
         <Routes>
           <Route path="/" element={<HomePage/>}/>
-          <Route path="/user-details" element={<UserDetails />} />
-          <Route path="/edit-user" element={<EditUser />} /> 
-          <Route path="/more-info" element={<MoreInfo />} />
+          <Route path="/user-details"  element={<UserDetails />} />
+          <Route path="/edit-user/:id" element={<EditUser />} />
+          <Route path="/more-info/:id" element={<MoreInfo />} />
+          {/* <Route path="/edit-user/:id" element={<Update />} /> */}
         </Routes>
       </Router>
     </>
   );
 };
-export default App;
+export default App

@@ -1,80 +1,82 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import Navbar from "./Navbar";
-import MoreInfo from "./MoreInfo";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
+import { baseUrl } from "../../environment/api";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 const UserDetails = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Fetch User Data from API using Axios
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/users");
+        const response = await axios.get(`${baseUrl}/users`);
+        toast("Processing your registration... ⏳", { type: "info", autoClose: 2000 });
+
         setUsers(response.data);
       } catch (error) {
         console.error("Error fetching users:", error);
+      } finally {
+        setLoading(false);
       }
     };
-
     fetchUsers();
   }, []);
 
-  const handleDelete = async (id) => {
-    if (!id) {
-      console.error("Invalid ID provided. Cannot delete.");
-      return; // Don't proceed if the ID is invalid
-    }
+  
 
-    console.log("Deleting user with id:", id); // Debugging log
+  const handleMoreInfo = (id) => {
+    navigate(`/more-info/${id}`);
+  };
+
+  const handleDelete = async (id) => {
     try {
-      const response = await axios.delete(
-        `http://localhost:5000/api/users/${id}`
-      );
-      if (response.status === 200) {
-        setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
-      } else {
-        throw new Error("Failed to delete the user");
-      }
+      await axios.delete(`${baseUrl}/user/${id}`);
+      setUsers((prevUsers) => prevUsers.filter((user) => user._id !== id));
+      console.log("User deleted successfully:", id);
     } catch (error) {
       console.error("Error deleting user:", error);
     }
   };
 
-  return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <Navbar isUserDetails={true} />
-      <div className="max-w-3xl mx-auto bg-white p-16 mt-8 rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold text-center text-gray-700 mb-6">
-          User Details
-        </h2>
+  const handleBack = () => {
+    navigate("/");
+  };
 
-        <table className="w-full border-collapse border border-gray-300">
+  if (loading) {
+    return <div className="flex justify-center items-center min-h-screen text-white">Loading...</div>;
+  }
+
+  return (
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-indigo-700 to-blue-200 p-4">
+      <div className="bg-white bg-opacity-10 backdrop-blur-lg shadow-xl rounded-lg w-[36rem] p-8">
+        <h2 className="text-2xl font-bold text-center text-gray-500 mb-0">🚀 User List</h2>
+        <table className="w-full border-separate border-spacing-y-3">
           <thead>
-            <tr className="bg-gray-200">
-              <th className="border p-3 text-left">Name</th>
-              <th className="border p-3 text-center">Actions</th>
+          <tr className="text-gray-700 bg-pink-300">
+          <th className="p-4 text-left rounded-l-lg">👤 Name</th>
+            <th className="p-4 text-center rounded-r-lg">⚡ Actions</th>
             </tr>
           </thead>
           <tbody>
             {users.map((user) => (
-              <tr key={user.id} className="border">
-                <td className="border p-3">{user.name}</td>
-                <td className="border p-3 text-center space-x-2">
+              <tr key={user._id} className="text-center bg-gray-100 rounded-lg shadow-md">
+                <td className="p-3 text-gray-800">{user.name}</td>
+                <td className="p-3 flex justify-center space-x-4">
                   <button
-                    className="px-3 py-1 bg-green-500 text-white rounded-md hover:bg-green-600"
-                    onClick={() => {
-                      console.log("User object:", user); // Check if this is the right data
-                      navigate("/more-info", { state: { user } });
-                    }}
+                    className="bg-gradient-to-r  bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transform transition-transform hover:scale-105"
+                    onClick={() => handleMoreInfo(user._id)}
                   >
                     More Info
                   </button>
                   <button
-                    className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600"
-                    onClick={() => handleDelete(user.id)}
+                    className="bg-gradient-to-r from-red-600 to-pink-600 text-white px-4 py-2 rounded-lg shadow-md transform transition-transform hover:scale-105"
+                    onClick={() => handleDelete(user._id)}
                   >
                     Delete
                   </button>
@@ -83,9 +85,18 @@ const UserDetails = () => {
             ))}
           </tbody>
         </table>
+        <div className="mt-6 text-center">
+          <button
+            className="bg-gradient-to-r from-gray-500 to-gray-700 text-white px-4 py-3 rounded-lg font-semibold shadow-md transform transition-transform hover:scale-105"
+            onClick={handleBack}
+          >
+            Back to Registration
+          </button>
+        </div>
       </div>
     </div>
   );
 };
 
 export default UserDetails;
+
