@@ -1,0 +1,9 @@
+.primaryBtn{
+    padding: 3%;
+    margin: auto;
+    background: #ffff;
+    box-shadow: 0px 0px 1px 1px;
+    border-radius: 4px;
+    cursor: pointer;
+    
+}
