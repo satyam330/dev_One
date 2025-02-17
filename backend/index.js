@@ -19,7 +19,7 @@ mongoose.connect("mongodb://localhost:27017/userDB").then(() => console.log("Mon
     res.send("Welcome to the Backend API!");
 });
 
-app.get("/api", userRoutes);
+app.use("/api", userRoutes);
 
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
