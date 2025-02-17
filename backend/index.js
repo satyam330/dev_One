@@ -3,6 +3,9 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import userRoutes from './routes/userRoutes.js'; 
+import mongodb from 'mongodb';
+import serverless from 'serverless-http';
+
 
 // Load environment variables
 dotenv.config();
@@ -19,10 +22,52 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('Connected to MongoDB Atlas'))
   .catch((err) => console.error('MongoDB connection error:', err));
 
+
+
+
+// Get the MongoDB client
+const MongoClient = mongodb.MongoClient;
+
+// Replace with your actual MongoDB URI and credentials
+
+// Create a new MongoClient instance
+// const client = new MongoClient(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+
+// // Connect to the MongoDB cluster
+// client.connect(err => {
+//   if (err) {
+//     console.log('MongoDB connection error:', err);
+//     return;
+//   }
+
+  // console.log('MongoDB connected successfully!');
+  
+  // Replace with your actual database and collection names
+//   const collection = client.db('userDB').collection('users');
+  
+//   // Perform actions on the collection object, such as inserting data
+//   collection.find({}).toArray((err, result) => {
+//     if (err) {
+//       console.log('Error querying data:', err);
+//     } else {
+//       console.log('Data from MongoDB:', result);
+//     }
+
+//     // Close the connection after the actions
+//     client.close();
+//   });
+// });
+
+
 // Home route
 app.get('/', (req, res) => {
   res.send('Welcome to the Backend API!');
 });
+
+app.get('/', (req, res) => {
+  res.send('Hello, Vercel!');
+});
+export const handler = serverless(app);
 
 // User routes
 app.use('/api', userRoutes);
