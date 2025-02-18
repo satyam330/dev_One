@@ -72,6 +72,12 @@ export const handler = serverless(app);
 
 // User routes
 app.use('/api', userRoutes);
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  w: "majority"  // Ensure correct write concern
+});
+
 
 // Start server
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
